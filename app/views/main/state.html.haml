@@ -1,0 +1,12 @@
+- cache [@state.id,@state.urs.count,@upd_ur.updated_at,@upd_pu.updated_at] do
+  %h3.state.text-center
+    = @state.name
+    %small.dropdown
+      %button.btn.btn-default.dropdown-toggle{'type' => "button", 'id' => "dropdownCities", 'data-toggle' => "dropdown", 'aria-haspopup' => "true", 'aria-expanded' => "true"}
+        = t('city')
+        %span.caret
+      %ul.dropdown-menu{ 'aria-labelledby' => "dropdownCities"}      
+        - @state.cities.order(:name).each do |r|
+          %li
+            %a{:href => "/city/#{r.id}"}= r.name
+  = render partial: 'data', locals: {area: @state}

@@ -1,0 +1,13 @@
+div.map-select{
+	border: 2px solid #99F;
+	border-radius: 8px;
+        padding: 5px;
+	margin: 1px 5px 5px 5px;
+	background-color: #DDF;
+}
+div.map-svg.clickable path:hover{fill:#888}
+div.map-select.clickable path:hover{fill:#006}
+div.map-svg{height:265px}
+.busca-estado div.map-svg{height:300px;width:300px;display:inline-block}
+div.map-svg .active path,div.map-svg path.active{fill:#888!important}
+div.map-select .active path,div.map-select path.active{fill:#888!important}

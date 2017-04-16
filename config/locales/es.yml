@@ -1,0 +1,120 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+es:
+  app-title: "Waze Chile - Panel de Control"
+  blocked-places: "Lugares bloqueados por el staff"
+  city: "Provincia"
+  comment: "comentario"
+  comments: "comentarios"
+  date: "Data"
+  editor: "Editor"
+  last-comment: "Último comentario"
+  link:
+    waze:
+      text: "Waze"
+      url: "http://www.waze.com"
+    forum:
+      text: "Foro"
+      url: "https://www.waze.com/forum/viewforum.php?f=145"
+    wiki:
+      text: "Wiki"
+      url: "https://wazeopedia.waze.com/wiki/Chile"
+
+  mp:
+    type_1: "Se detecta segmento irregular."
+    type_2: "Se detecta segmento sin conectar"
+    type_3: "Se detectó la falta intersección "
+    type_5: "Se detectaron segmentos superpuestos"
+    type_6: "Se detectó problema en la ruta (segmento sin salida)"
+    type_7: "Se detectó tipo de carretera incorrecta"
+    type_8: "Se detectó un segmento corto"
+    type_10: "Se detectaron demasiados segmentos conectando en una unión"
+    type_11: "Se detectó dirección de segmento incorrecta"
+    type_12: "Se detectaron uniones de nodos innecesarias"
+    type_13: "Detectada conexión de rampa inapropiada"
+    type_14: "Detectado nivel de vía equivocado"
+    type_15: "Detectado giro pronunciado"
+    type_16: "Detectada irregularidad en una vía con peaje"
+    type_17: "Detectado segmento sin detalles"
+    type_19: "Detectado segmento de rotonda irregular"
+    type_20: "Detectado segmento de rotonda irregular"
+    type_21: "Detectado nombre de calle incorrecto"
+    type_22: "Detectado callejón sin salida no válido"
+    type_50: "Estacionamiento introducido como punto"
+    type_51: "Lugar inaccesible"
+    type_52: "No existe el Lugar en el mapa de Waze"
+    type_53: "Los Lugares no coinciden"
+    type_70: "Falta Lugar de Estacionamiento"
+    type_71: "Falta Lugar de Estacionamiento"
+    type_101: "El sentido de conducción no coincide"
+    type_102: "Falta intersección"
+    type_103: "Falta carretera"
+    type_104: "Falta Intersección de vías"
+    type_105: "No coincide el tipo de vía"
+    type_106: "Un giro prohibido podría estar permitido"
+    type_200: "La ruta sugerida es ignorada con frecuencia"
+    type_300: "Solicitud de Cierre Vial"
+  mp-total: "Total"
+  mps: "Map Problems"
+  nav-first-page: "Principal"
+  noname: "Sin nombre"
+  place-name: "Place name"
+  pu:
+    image: "Nueva foto"
+    venue: "Nuevo lugar"
+    request:
+      update: "Nuevos detalles para el lugar"
+      delete: "Lugar eliminado"
+      flag: "Lugar denunciado"
+      unknown: "Desconocido"
+  solution: "Solución"
+  state: "Región"
+  unapproved-places: "Lugares"
+  updated-at: "Actualizado en"
+  ur:
+    type_6: "Giro incorrecto"
+    type_7: "Dirección incorrecta"
+    type_8: "Ruta incorrecta"
+    type_9: "Falta rotonda"
+    type_10: "Error general"
+    type_11: "Giro no permitido"
+    type_12: "Cruce incorrecto"
+    type_13: "Falta paso superior"
+    type_14: "Sentido de conducción incorrecto"
+    type_15: "Falta salida"
+    type_16: "Falta carretera"
+    type_18: "Falta Punto de Interés"
+    type_19: "Vía bloqueada"
+    type_21: "Falta nombre de calle"
+    type_22: "Prefijo o sufijo de calle incorrecto"
+    type_23: "El límite de velocidad falta o es incorrecto"
+  ur-awaiting-answer: "Esperando respuesta"
+  ur-closed: "URs cerradas"
+  ur-open: "URs abiertas"
+  ur-without-comments: "Sin descripción"
+  ur-with-answer: "Con descripción"
+  ur-total: "Total"
+  ur-result-solved: "Resuelto"
+  ur-result-ni: "No identificado"
+  with-pending-updates: "con actualizaciones pendientes"
+  wme: ""
+  wme-link: "Link en WME"

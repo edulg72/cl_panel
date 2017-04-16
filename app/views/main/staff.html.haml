@@ -1,0 +1,19 @@
+- cache [@places.size, @upd_pu.updated_at] do
+  %h1.text-center
+    = t('blocked-places')
+    %small= t('with-pending-updates')
+  %table.table{:border => '0', :cellspacing => '1', :cellpadding => '2', :align => 'center'}
+    %thead
+      %tr
+        %th= t('state')
+        %th= t('city')
+        %th= t('place-name')
+        %th= t('wme-link')
+    %tbody
+      - @places.order('city_id').each do |p|
+        %tr
+          %td{:align => 'center'}= p.city.state.abbreviation
+          %td= p.city.name
+          %td= (p.name.nil? or p.name.strip.empty? ? "[#{t('noname')}]": p.name) 
+          %td
+            %a{:href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{p.latitude}\&lon=#{p.longitude}\&layers=453\&showpur=#{p.id}\&endshow", :target => "WME"}= "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&lat=#{p.latitude}\&lon=#{p.longitude}\&showpur=#{p.id}\&endshow" 

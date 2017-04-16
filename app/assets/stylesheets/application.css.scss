@@ -1,0 +1,22 @@
+$body-bg: #f2f3f4;
+$btn-default-bg: #bedce5;
+$panel-default-heading-bg: $btn-default-bg;
+$panel-primary-heading-bg: #CCC;
+$panel-primary-border: #CCC;
+$panel-primary-text: #333;
+$state-info-bg: #93c4d3;
+
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "font-awesome-sprockets";
+@import "font-awesome";
+@import "map";
+body { padding-top: 65px; }
+a:visited:not(.linkbar) { color: #666; }
+// a:visited(.btn) { color: #AAA; }
+// .btn:visited { color: #333; }
+footer {
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: 1px solid #CCC;
+}

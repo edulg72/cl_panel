@@ -1,0 +1,15 @@
+- cache [@places.size, @upd_pu.updated_at, 'pus'] do
+  %h3.text-center
+    = t('unapproved-places')
+    .row
+      .col-sm-3.col-sm-offset-3.col-md-3.col-md-offset-9.col-lg-3.col-lg-offset-9
+        %span.text-right.small= "#{t('updated-at')} #{@upd_pu.updated_at.strftime('%d/%m/%Y %H:%M')}"
+    .row
+      - @places.order("created_on").each do |p|
+        %a.btn.btn-sm{ 'style' => "margin-top: 5px;", :class => "#{(Time.now - p.created_on) < 172800 ? 'btn-success' : ((Time.now - p.created_on) < 1209600 ? 'btn-warning' : 'btn-danger')}", :href => "https://www.waze.com/#{t('wme')}/editor/?zoom=7\&lat=#{p.latitude}\&lon=#{p.longitude}\&showpur=#{p.id}\&endshow", 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => "#{type_pu(p.type_pu,p.subtype)}", :target => "WME"}
+          - if p.category == 'RESIDENCE_HOME'
+            %i.fa.fa-home{'aria-hidden' => 'true'}
+          - if p.category == 'PARKING_LOT'
+            %i.fa.fa-car{'aria-hidden' => 'true'}
+          %i{'class' => "fa #{icon_pu(p.type_pu,p.subtype)}", 'aria-hidden' => 'true'}
+          = (p.name.nil? or p.name.strip.empty? ? "[#{t('noname')}]": p.name)

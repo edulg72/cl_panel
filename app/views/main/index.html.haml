@@ -1,0 +1,58 @@
+- cache [@ur.open.count,@upd_ur.updated_at, @upd_pu.updated_at] do
+  .container
+    .row
+      .col-sm-7.col-md-8.col-lg-9
+        .map
+          = render partial: 'map'
+      .col-sm-5.col-md-4.col-lg-3
+        .panel.panel-default
+          .panel-heading
+            %img{ :src => "#{asset_path 'ur.png'}" }
+            %span.panel-title User Requests (UR)
+          %table.table
+            %tbody
+              %tr
+                %td= t('ur-without-comments')
+                %td.text-right= @ur.open.without_comments.count
+              %tr
+                %td= t('ur-with-answer')
+                %td.text-right= @ur.open.with_answer.count
+              %tr
+                %td= t('ur-awaiting-answer')
+                %td.text-right= @ur.open.without_answer.count
+            %tfoot
+              %tr
+                %th.text-right= t('ur-total')
+                %th.text-right= @ur.open.count
+        .panel.panel-default
+          .panel-heading
+            %img{ :src => "#{asset_path 'mp.png'}" }
+            %span.panel-title Map Problems (MP)
+          %table.table
+            %tbody
+              %tr
+                %td
+                  %a{:href => '/mps'} Abiertas
+                %td.text-right= @mp.count
+            %tfoot
+              %tr
+                %th.text-right= t('mp-total')
+                %th.text-right= @mp.count
+        .panel.panel-default
+          .panel-heading
+            %img{ :src => "#{asset_path 'pu.png'}" }
+            %span.panel-title Place Updates (PU)
+          %table.table
+            %tbody
+              %tr
+                %td
+                  %a{:href => '/pus'} Pendentes
+                %td.text-right= @pu.editable.count
+              %tr
+                %td
+                  %a{:href => '/staff'} Bloqueados (staff)
+                %td.text-right= @pu.blocked.count
+            %tfoot
+              %tr
+                %th.text-right Total
+                %th.text-right= @pu.count

@@ -1,0 +1,99 @@
+%script
+  $('#openURs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+  })
+%ul.nav.nav-tabs{ 'role' => 'tablist'}
+  %li.active{ 'role' => 'presentation' }
+    %a{ :href => "#openURs", 'aria-controls' => "openURs", 'role' => "tab", 'data-toggle' => "tab" }
+      = t('ur-open')
+      %span.badge= area.urs.open.count
+  %li{ 'role' => 'presentation' }
+    %a{ :href => "#closedURs", 'aria-controls' => "closedURs", 'role' => "tab", 'data-toggle' => "tab" }
+      = t('ur-closed')
+      %span.badge= area.urs.closed.count
+  %li{ 'role' => 'presentation' }
+    %a{ :href => "#mps", 'aria-controls' => "mps", 'role' => "tab", 'data-toggle' => "tab" }
+      MPs
+      %span.badge= area.mps.open.count
+  %li{ 'role' => 'presentation'}
+    %a{ :href => "#pus", 'aria-controls' => "pus", 'role' => "tab", 'data-toggle' => "tab"  }
+      PUs
+      %span.badge= area.pus.editable.count
+.tab-content
+  #openURs.tab-pane.active.fade.in{ 'role' => 'tabpanel'}
+    .row
+      .col-sm-3.col-sm-offset-3.col-md-3.col-md-offset-9.col-lg-3.col-lg-offset-9
+        %span.text-right.small= "#{t('updated-at')} #{@upd_ur.updated_at.strftime('%d/%m/%Y %H:%M')}"
+    .panel.panel-default
+      .panel-heading= t('ur-without-comments')
+      .panel-body
+        .row
+          - area.urs.open.without_comments.order(:created_on).each do |u|
+            %a.btn.btn-sm{ 'style' => "margin-top: 5px;", :role => 'button', :class => "#{(Time.now - u.created_on) < 172800 ? 'btn-success' : ((Time.now - u.created_on) < 1209600 ? 'btn-warning' : 'btn-danger')}", :href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{u.latitude}\&lon=#{u.longitude}\&mapUpdateRequest=#{u.id}", 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => "#{type_ur(u.type_ur)}", :target => "WME"}
+              %i{'class' => "fa #{icon_ur(u.type_ur)}", 'aria-hidden' => 'true'}
+              = u.id
+    .panel.panel-default
+      .panel-heading= t('ur-with-answer')
+      .panel-body
+        .row
+          - area.urs.open.with_answer.order(:last_comment_on).each do |u|
+            %a.btn.btn-sm{ 'style' => "margin-top: 5px;", :role => 'button', :class => "#{(Time.now - u.last_comment_on) < 172800 ? 'btn-success' : ((Time.now - u.last_comment_on) < 1209600 ? 'btn-warning' : 'btn-danger')}", :href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{u.latitude}\&lon=#{u.longitude}\&mapUpdateRequest=#{u.id}", 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => "#{type_ur(u.type_ur)}", :target => "WME"}
+              %i{'class' => "fa #{icon_ur(u.type_ur)}", 'aria-hidden' => 'true'}
+              = u.id
+              %br
+              %small= "#{u.comments} #{u.comments == 1 ? t('comment') : t('comments')}"
+    .panel.panel-default
+      .panel-heading= t('ur-awaiting-answer')
+      .panel-body
+        .row
+          - area.urs.open.without_answer.order("comments desc, last_comment_on").each do |u|
+            %a.btn.btn-sm{ 'style' => "margin-top: 5px;", :role => 'button', :class => "#{(Time.now - u.last_comment_on) < 172800 ? 'btn-success' : ((Time.now - u.last_comment_on) < 1209600 ? 'btn-warning' : 'btn-danger')}", :href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{u.latitude}\&lon=#{u.longitude}\&mapUpdateRequest=#{u.id}", 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => "#{type_ur(u.type_ur)}", :target => "WME"}
+              %i{'class' => "fa #{icon_ur(u.type_ur)}", 'aria-hidden' => 'true'}
+              = u.id
+              %br
+              %small= "#{u.comments} #{u.comments == 1 ? t('comment') : t('comments')}"
+  #closedURs.tab-pane.fade{ 'role' => 'tabpanel' }
+    .row
+      .col-sm-3.col-sm-offset-3.col-md-3.col-md-offset-9.col-lg-3.col-lg-offset-9
+        %span.text-right.small= "#{t('updated-at')} #{@upd_ur.updated_at.strftime('%d/%m/%Y %H:%M')}"
+    %table.table.table-hover{:border => '0', :cellspacing => '1', :cellpadding => '2', :width => '100%'}
+      %tr
+        %th= t('date')
+        %th= t('editor')
+        %th= t('solution')
+        %th= t('last_comment')
+      - area.urs.closed.order("resolved_on desc").each do |u|
+        %tr{ :class => "closed#{(' alert' if (false && u.resolution == 1 && (u.resolved_on - u.last_comment_on) < 172800))}"}
+          %td{:align => 'center'}= u.resolved_on.strftime('%d/%m/%Y %H:%M')
+          %td
+            - if not u.operator.nil?
+              %a{:href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{u.latitude}\&lon=#{u.longitude}\&mapUpdateRequest=#{u.id}", :target => "WME"}
+                = "#{u.operator.username} (#{u.operator.rank})"
+          %td{:align => 'center'}= (u.resolution == 0 ? t('ur-result-solved') : t('ur-result-ni'))
+          %td
+            - if u.comments > 0
+              %strong= "#{u.commentator.username} (#{u.commentator.rank})" if not u.commentator.nil?
+              = u.last_comment
+  #mps.tab-pane.fade{ 'role' => 'tabpanel' }
+    .row
+      .col-sm-3.col-sm-offset-3.col-md-3.col-md-offset-9.col-lg-3.col-lg-offset-9
+        %span.text-right.small= "#{t('updated-at')} #{@upd_ur.updated_at.strftime('%d/%m/%Y %H:%M')}"
+    .row
+      - area.mps.open.order("weight desc").each do |m|
+        %a.btn.btn-sm{ 'style' => "margin-top: 5px;", :role => 'button', :class => "#{m.weight < 4 ? 'btn-success' : (m.weight < 8 ? 'btn-warning' : 'btn-danger')}", :href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{m.latitude}\&lon=#{m.longitude}\&mapProblem=2\/#{m.id}", 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => "#{type_mp(m.type_mp)}", :target => "WME"}
+          %i.fa{class: "#{icon_mp(m.type_mp)}"}
+          = m.id
+  #pus.tab-pane.fade{ 'role' => 'tabpanel' }
+    .row
+      .col-sm-3.col-sm-offset-3.col-md-3.col-md-offset-9.col-lg-3.col-lg-offset-9
+        %span.text-right.small= "#{t('updated-at')} #{@upd_pu.updated_at.strftime('%d/%m/%Y %H:%M')}"
+    .row
+      - area.pus.editable.order("created_on").each do |p|
+        %a.btn.btn-sm{ 'style' => "margin-top: 5px;", :role => 'button', :class => "#{(Time.now - p.created_on) < 172800 ? 'btn-success' : ((Time.now - p.created_on) < 1209600 ? 'btn-warning' : 'btn-danger')}", :href => "https://www.waze.com#{t('wme')}/editor/?env=row&zoom=7\&venueFilter=3\&lat=#{p.latitude}\&lon=#{p.longitude}\&showpur=#{p.id}\&endshow", 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => "#{type_pu(p.type_pu,p.subtype)}", :target => "WME"}
+          - if p.category == 'RESIDENCE_HOME'
+            %i.fa.fa-home{'aria-hidden' => 'true'}
+          - if p.category == 'PARKING_LOT'
+            %i.fa.fa-car{'aria-hidden' => 'true'}
+          %i{'class' => "fa #{icon_pu(p.type_pu,p.subtype)}", 'aria-hidden' => 'true'}
+          = (p.name.nil? or p.name.strip.empty? ? "[#{t('noname')}]": p.name)
