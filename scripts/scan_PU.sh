@@ -1,8 +1,8 @@
 #!/bin/bash
 
-LOG_FILE=/home/ubuntu/scan_PU.log
+LOG_FILE=/home/rails/ch_scan_PU.log
 
-cd /var/www/panel/scripts
+cd /home/rails/ch_panel/scripts
 
 echo "Start: $(date '+%d/%m/%Y %H:%M:%S')"
 psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'delete from pu; delete from places;'
