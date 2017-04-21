@@ -1,9 +1,9 @@
 postgresql: &postgresql
   adapter: postgresql
   database: ch_panel
-  username: <%=ENV['POSTGRESQL_DB_USERNAME']%>
-  password: <%=ENV['POSTGRESQL_DB_PASSWORD']%>
-  host:     <%=ENV['POSTGRESQL_DB_HOST']%>
+  username: waze
+  password: waze
+  host:     localhost
   port:     5432
   min_messages: ERROR
   reconnect: false
