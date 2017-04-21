@@ -4,7 +4,7 @@ postgresql: &postgresql
   username: <%=ENV['POSTGRESQL_DB_USERNAME']%>
   password: <%=ENV['POSTGRESQL_DB_PASSWORD']%>
   host:     <%=ENV['POSTGRESQL_DB_HOST']%>
-  port:     <%=ENV['POSTGRESQL_DB_PORT']%>
+  port:     5432
   min_messages: ERROR
   reconnect: false
 
