@@ -52,54 +52,56 @@ def scan_UR(db,agent,longWest,latNorth,longEast,latSouth,step,exec)
       area = [lonStart, latStart, lonEnd, latEnd]
 
       begin
-        wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?venueLevel=1&venueFilter=1&venueUpdateRequests=true&bbox=#{area.join('%2C')}"
+        ['venueLevel=1&venueFilter=1&venueUpdateRequests=true','venueLevel=1&venueFilter=1,1,3'].each do |par|
+          wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?#{par}&bbox=#{area.join('%2C')}"
 
-        json = JSON.parse(wme.body)
+          json = JSON.parse(wme.body)
 
-        # Stores users that edit on this area
-        json['users']['objects'].each do |u|
-          if db.exec_params('select * from users where id = $1',[u['id']]).ntuples == 0
-            db.exec_prepared('insert_user', [u['id'],u['userName'],u['rank']+1])
+          # Stores users that edit on this area
+          json['users']['objects'].each do |u|
+            if db.exec_params('select * from users where id = $1',[u['id']]).ntuples == 0
+              db.exec_prepared('insert_user', [u['id'],u['userName'],u['rank']+1])
+            end
           end
-        end
 
-        # Stores PUs data from the area
-        json['venues']['objects'].each do |v|
-          if db.exec_params('select id from places where id = $1',[v['id']]).ntuples == 0
-            db.exec_prepared('insert_place',[v['id'], (v['name'].nil? ? v['name'] : v['name'][0..99]), v['streetID'], (v.has_key?('createdOn') ? Time.at(v['createdOn']/1000) : nil), v['createdBy'], (v.has_key?('updatedOn') ? Time.at(v['updatedOn']/1000) : nil), v['updatedBy'], (v['geometry']['type']=='Point'? v['geometry']['coordinates'][0] : v['geometry']['coordinates'][0][0][0]), (v['geometry']['type']=='Point'? v['geometry']['coordinates'][1] : v['geometry']['coordinates'][0][0][1]), v['lockRank'], v['approved'], (v.has_key?('residential') ? v['residential'] : false), v['categories'][0], (v.has_key?('adLocked') ? v['adLocked'] : false) ])
-          end
-          if v.has_key?('venueUpdateRequests')
-            pu = {'dateAdded' => (Time.now.to_i * 1000)}
-            if v.has_key?('adLocked') and v['adLocked']
-              pu['id']= v['venueUpdateRequests'][0]['id']
-              pu['createdBy']= v['venueUpdateRequests'][0]['createdBy']
-              pu['dateAdded']= v['venueUpdateRequests'][0]['dateAdded']
-              pu['longitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][0] : v['geometry']['coordinates'][0][0][0])
-              pu['latitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][1] : v['geometry']['coordinates'][0][0][1])
-              pu['adLocked']= true
-              pu['placeID']= v['id']
-              pu['type']= v['venueUpdateRequests'][0]['type']
-              pu['subType']= v['venueUpdateRequests'][0]['subType']
-            else
-              v['venueUpdateRequests'].each do |vu|
-                if vu.has_key?('dateAdded') and vu['dateAdded'] < pu['dateAdded']
-                  pu['id']= v['id']
-                  pu['createdBy']= vu['createdBy']
-                  pu['dateAdded']= vu['dateAdded']
-                  pu['longitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][0] : v['geometry']['coordinates'][0][0][0])
-                  pu['latitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][1] : v['geometry']['coordinates'][0][0][1])
-                  pu['adLocked']= (v.has_key?('adLocked') ? v['adLocked'] : false)
-                  pu['placeID']= v['id']
-                  pu['type']= vu['type']
-                  pu['subType']= vu['subType']
+          # Stores PUs data from the area
+          json['venues']['objects'].each do |v|
+            if db.exec_params('select id from places where id = $1',[v['id']]).ntuples == 0
+              db.exec_prepared('insert_place',[v['id'], (v['name'].nil? ? v['name'] : v['name'][0..99]), v['streetID'], (v.has_key?('createdOn') ? Time.at(v['createdOn']/1000) : nil), v['createdBy'], (v.has_key?('updatedOn') ? Time.at(v['updatedOn']/1000) : nil), v['updatedBy'], (v['geometry']['type']=='Point'? v['geometry']['coordinates'][0] : v['geometry']['coordinates'][0][0][0]), (v['geometry']['type']=='Point'? v['geometry']['coordinates'][1] : v['geometry']['coordinates'][0][0][1]), v['lockRank'], v['approved'], (v.has_key?('residential') ? v['residential'] : false), v['categories'][0], (v.has_key?('adLocked') ? v['adLocked'] : false) ])
+            end
+            if v.has_key?('venueUpdateRequests')
+              pu = {'dateAdded' => (Time.now.to_i * 1000)}
+              if v.has_key?('adLocked') and v['adLocked']
+                pu['id']= v['venueUpdateRequests'][0]['id']
+                pu['createdBy']= v['venueUpdateRequests'][0]['createdBy']
+                pu['dateAdded']= v['venueUpdateRequests'][0]['dateAdded']
+                pu['longitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][0] : v['geometry']['coordinates'][0][0][0])
+                pu['latitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][1] : v['geometry']['coordinates'][0][0][1])
+                pu['adLocked']= true
+                pu['placeID']= v['id']
+                pu['type']= v['venueUpdateRequests'][0]['type']
+                pu['subType']= v['venueUpdateRequests'][0]['subType']
+              else
+                v['venueUpdateRequests'].each do |vu|
+                  if vu.has_key?('dateAdded') and vu['dateAdded'] < pu['dateAdded']
+                    pu['id']= v['id']
+                    pu['createdBy']= vu['createdBy']
+                    pu['dateAdded']= vu['dateAdded']
+                    pu['longitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][0] : v['geometry']['coordinates'][0][0][0])
+                    pu['latitude']= (v['geometry']['type']=='Point'? v['geometry']['coordinates'][1] : v['geometry']['coordinates'][0][0][1])
+                    pu['adLocked']= (v.has_key?('adLocked') ? v['adLocked'] : false)
+                    pu['placeID']= v['id']
+                    pu['type']= vu['type']
+                    pu['subType']= vu['subType']
+                  end
                 end
               end
-            end
-            if pu.has_key?('id')
-              begin
-                db.exec_prepared('insert_pu',[pu['id'], pu['createdBy'], Time.at(pu['dateAdded']/1000), pu['longitude'], pu['latitude'], pu['adLocked'], pu['type'], pu['subType'], pu['placeID'] ])
-              rescue PG::UniqueViolation
-                puts "#{pu['id']}"
+              if pu.has_key?('id')
+                begin
+                  db.exec_prepared('insert_pu',[pu['id'], pu['createdBy'], Time.at(pu['dateAdded']/1000), pu['longitude'], pu['latitude'], pu['adLocked'], pu['type'], pu['subType'], pu['placeID'] ])
+                rescue PG::UniqueViolation
+                  puts "#{pu['id']}"
+                end
               end
             end
           end
