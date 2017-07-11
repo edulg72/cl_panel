@@ -14,7 +14,7 @@ end
 
 puts "#!/bin/bash\n\necho \"Start: $(date '+%d/%m/%Y %H:%M:%S')\"\n\ncase \"$3\" in"
 
-db = PG::Connection.new(:hostaddr => '127.0.0.1', :dbname => 'ch_panel', :user => 'waze', :password => 'waze')
+db = PG::Connection.new(:hostaddr => '127.0.0.1', :dbname => 'cl_panel', :user => 'waze', :password => 'waze')
 db.prepare('box_estado','select abbreviation from states where (ST_Overlaps(geom,ST_SetSRID(ST_MakeBox2D(ST_Point($1,$2),ST_Point($3,$4)),4326)) or ST_Contains(geom,ST_SetSRID(ST_MakeBox2D(ST_Point($1,$2),ST_Point($3,$4)),4326)) or ST_Contains(ST_SetSRID(ST_MakeBox2D(ST_Point($1,$2),ST_Point($3,$4)),4326),geom)) and abbreviation = $5')
 
 db.exec("select abbreviation, ST_Xmin(ST_Envelope(geom)) as longoeste, ST_Xmax(ST_Envelope(geom)), ST_Ymax(ST_Envelope(geom)) as latnorte, ST_Ymin(ST_Envelope(geom)) as latsul from states where abbreviation is not null #{sigla if not sigla.nil?} order by abbreviation").each do |estado|

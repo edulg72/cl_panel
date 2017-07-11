@@ -1,12 +1,12 @@
 #!/bin/bash
 
-LOG_FILE=/home/rails/ch_scan_PU.log
+LOG_FILE=/home/rails/cl_scan_PU.log
 
-cd /home/rails/ch_panel/scripts
+cd /home/rails/cl_panel/scripts
 
 echo "Start: $(date '+%d/%m/%Y %H:%M:%S')"
 
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'delete from ur; delete from mp;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'delete from ur; delete from mp;'
 
 ruby scan_UR.rb $1 $2 -70.46 -17.5 -68.46 -18.5 1.0
 ruby scan_UR.rb $1 $2 -70.46 -18.5 -67.46 -19.5 1.0
@@ -53,13 +53,13 @@ ruby scan_UR.rb $1 $2 -74.46 -53.5 -68.46 -54.5 1.0
 ruby scan_UR.rb $1 $2 -73.46 -54.5 -65.46 -55.5 1.0
 ruby scan_UR.rb $1 $2 -70.46 -55.5 -66.46 -56.5 1.0
 
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'update ur set city_id = (select id from cities where ST_Contains(geom, ur.position) limit 1) where city_id is null;'
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'update mp set city_id = (select id from cities where ST_Contains(geom, mp.position) limit 1) where city_id is null;'
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'update ur set comments = 0 where comments is null;'
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'update mp set weight = 0 where weight is null;'
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'refresh materialized view vw_ur;'
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'refresh materialized view vw_mp;'
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c "update updates set updated_at = current_timestamp where object = 'ur';"
-psql -h $POSTGRESQL_DB_HOST -d ch_panel -U $POSTGRESQL_DB_USERNAME -c 'vacuum analyze;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'update ur set city_id = (select id from cities where ST_Contains(geom, ur.position) limit 1) where city_id is null;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'update mp set city_id = (select id from cities where ST_Contains(geom, mp.position) limit 1) where city_id is null;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'update ur set comments = 0 where comments is null;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'update mp set weight = 0 where weight is null;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'refresh materialized view vw_ur;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'refresh materialized view vw_mp;'
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c "update updates set updated_at = current_timestamp where object = 'ur';"
+psql -h $POSTGRESQL_DB_HOST -d cl_panel -U $POSTGRESQL_DB_USERNAME -c 'vacuum analyze;'
 
 echo "End: $(date '+%d/%m/%Y %H:%M:%S')"

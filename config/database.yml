@@ -1,6 +1,6 @@
 postgresql: &postgresql
   adapter: postgresql
-  database: ch_panel
+  database: cl_panel
   username: waze
   password: waze
   host:     localhost
