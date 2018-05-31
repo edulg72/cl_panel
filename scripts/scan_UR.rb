@@ -57,7 +57,7 @@ def scan_UR(db,agent,longWest,latNorth,longEast,latSouth,step,exec)
       area = [lonStart, latStart, lonEnd, latEnd]
 
       begin
-        wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?mapUpdateRequestFilter=1&problemFilter=0&bbox=#{area.join('%2C')}"
+        wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?mapUpdateRequestFilter=1&problemFilter=0&bbox=#{area.join('%2C')}&sandbox=true"
 
         json = JSON.parse(wme.body)
 
@@ -98,7 +98,7 @@ def scan_UR(db,agent,longWest,latNorth,longEast,latSouth,step,exec)
 
         # Collect data from URs
         if urs_area.size > 0
-          ur = JSON.parse(agent.get("https://www.waze.com/row-Descartes-live/app/MapProblems/UpdateRequests?ids=#{urs_area.join('%2C')}").body)
+          ur = JSON.parse(agent.get("https://www.waze.com/row-Descartes-live/app/MapProblems/UpdateRequests?ids=#{urs_area.join('%2C')}&sandbox=true").body)
 
           ur['updateRequestSessions']['objects'].each do |u|
             begin

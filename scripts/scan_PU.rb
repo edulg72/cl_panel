@@ -53,7 +53,7 @@ def scan_UR(db,agent,longWest,latNorth,longEast,latSouth,step,exec)
 
       begin
         ['venueLevel=1&venueFilter=1&venueUpdateRequests=true','venueLevel=1&venueFilter=1,1,3'].each do |par|
-          wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?#{par}&bbox=#{area.join('%2C')}"
+          wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?#{par}&bbox=#{area.join('%2C')}&sandbox=true"
 
           json = JSON.parse(wme.body)
 
