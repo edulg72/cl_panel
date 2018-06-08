@@ -28,12 +28,12 @@ LatSouth = ARGV[5].to_f
 Step = ARGV[6].to_f
 
 agent = Mechanize.new
-begin
-  page = agent.get "https://www.waze.com/row-Descartes-live/app/Session"
-rescue Mechanize::ResponseCodeError
-  csrf_token = agent.cookie_jar.jar['www.waze.com']['/']['_csrf_token'].value
-end
-login = agent.post('https://www.waze.com/login/create', {"user_id" => USER, "password" => PASS}, {"X-CSRF-Token" => csrf_token})
+#begin
+#  page = agent.get "https://www.waze.com/row-Descartes-live/app/Session"
+#rescue Mechanize::ResponseCodeError
+#  csrf_token = agent.cookie_jar.jar['www.waze.com']['/']['_csrf_token'].value
+#end
+#login = agent.post('https://www.waze.com/login/create', {"user_id" => USER, "password" => PASS}, {"X-CSRF-Token" => csrf_token})
 
 db = PG::Connection.new(:hostaddr => ENV['POSTGRESQL_DB_HOST'], :dbname => 'cl_panel', :user => ENV['POSTGRESQL_DB_USERNAME'], :password => ENV['POSTGRESQL_DB_PASSWORD'])
 db.prepare('insert_user','insert into users (id, username, rank) values ($1,$2,$3)')
@@ -57,6 +57,7 @@ def scan_UR(db,agent,longWest,latNorth,longEast,latSouth,step,exec)
       area = [lonStart, latStart, lonEnd, latEnd]
 
       begin
+        agent.cookie_jar.clear!
         wme = agent.get "https://www.waze.com/row-Descartes-live/app/Features?mapUpdateRequestFilter=1&problemFilter=0&bbox=#{area.join('%2C')}&sandbox=true"
 
         json = JSON.parse(wme.body)
@@ -90,25 +91,27 @@ def scan_UR(db,agent,longWest,latNorth,longEast,latSouth,step,exec)
         json['mapUpdateRequests']['objects'].each do |u|
           begin
             db.exec_prepared('insert_ur', [u['id'], u['geometry']['coordinates'][0], u['geometry']['coordinates'][1], u['resolvedBy'], (u['resolvedOn'].nil? ? nil : Time.at(u['resolvedOn']/1000)), Time.at(u['driveDate']/1000), u['resolution'], u['type'] ] ) if db.exec_params('select id from ur where id = $1',[u['id']]).count == 0
-            urs_area << u['id']
+#            urs_area << u['id']
+            # Enquanto a busca estiver em modo sandbox, nao ha como buscar os comentarios e a atualizacao sera aqui
+            db.exec_prepared('update_ur', [(u.has_key?('updatedOn') ? (u['updatedOn'].nil? ? 0 : 1) : 0 ),(u.has_key?('updatedOn') ? '-' : nil), (u.has_key?('updatedOn') ? (u['updatedOn'].nil? ? nil : Time.at(u['updatedOn']/1000)) : nil), (u.has_key?('updatedBy') ? u['updatedBy'] : nil), (u.has_key?('updatedOn') ? (u['updatedOn'].nil? ? nil : Time.at(u['updatedOn']/1000)) : nil), u['id']] )
           rescue PG::UniqueViolation
             puts '.'
           end
         end
 
-        # Collect data from URs
-        if urs_area.size > 0
-          ur = JSON.parse(agent.get("https://www.waze.com/row-Descartes-live/app/MapProblems/UpdateRequests?ids=#{urs_area.join('%2C')}&sandbox=true").body)
+#        # Collect data from URs
+#        if urs_area.size > 0
+#          ur = JSON.parse(agent.get("https://www.waze.com/row-Descartes-live/app/MapProblems/UpdateRequests?ids=#{urs_area.join('%2C')}&sandbox=true").body)
 
-          ur['updateRequestSessions']['objects'].each do |u|
-            begin
-              db.exec_prepared('update_ur', [(u.has_key?('comments') and u['comments'].size > 0 ? u['comments'].size : 0 ),(u.has_key?('comments') and u['comments'].size > 0 ? u['comments'][-1]['text'].gsub('"',"'") : nil), (u.has_key?('comments') and u['comments'].size > 0 ? Time.at(u['comments'][-1]['createdOn']/1000) : nil), (u.has_key?('comments') and u['comments'].size > 0 ? u['comments'][-1]['userID'] : nil), (u.has_key?('comments') and u['comments'].size > 0 ? Time.at(u['comments'][0]['createdOn']/1000) : nil), u['id']] )
-            rescue NoMethodError
-              puts "#{u}"
-              exit
-            end
-          end
-        end
+#          ur['updateRequestSessions']['objects'].each do |u|
+#            begin
+#              db.exec_prepared('update_ur', [(u.has_key?('comments') and u['comments'].size > 0 ? u['comments'].size : 0 ),(u.has_key?('comments') and u['comments'].size > 0 ? u['comments'][-1]['text'].gsub('"',"'") : nil), (u.has_key?('comments') and u['comments'].size > 0 ? Time.at(u['comments'][-1]['createdOn']/1000) : nil), (u.has_key?('comments') and u['comments'].size > 0 ? u['comments'][-1]['userID'] : nil), (u.has_key?('comments') and u['comments'].size > 0 ? Time.at(u['comments'][0]['createdOn']/1000) : nil), u['id']] )
+#            rescue NoMethodError
+#              puts "#{u}"
+#              exit
+#            end
+#          end
+#        end
 
       # Trata eventuais erros de conexao
       rescue Mechanize::ResponseCodeError
