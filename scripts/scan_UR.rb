@@ -28,6 +28,7 @@ LatSouth = ARGV[5].to_f
 Step = ARGV[6].to_f
 
 agent = Mechanize.new
+agent.user_agent_alias = 'Mac Safari'
 #begin
 #  page = agent.get "https://www.waze.com/row-Descartes-live/app/Session"
 #rescue Mechanize::ResponseCodeError
